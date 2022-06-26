@@ -27,6 +27,14 @@ func (n *Node) Parent() *Node {
 	return n.parent
 }
 
+// func (n *Node) AllParents() []*Node {
+// 	if parent := n.parent; parent == nil {
+// 		return nil
+// 	} else {
+// 		return append(parent.AllParents(), parent)
+// 	}
+// }
+
 func (n *Node) Root() *Node {
 	root := n.parent
 	for {
@@ -37,6 +45,15 @@ func (n *Node) Root() *Node {
 			root = root.parent
 		}
 	}
+}
+
+func (n *Node) Flatten() []*Node {
+	nodes := []*Node{}
+	for _, child := range n.children {
+		nodes = append(nodes, child)
+		nodes = append(nodes, child.Flatten()...)
+	}
+	return nodes
 }
 
 func (n *Node) GetChild(path []string) *Node {

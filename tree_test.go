@@ -114,3 +114,12 @@ func TestTreeDelele(t *testing.T) {
 	assert.True(root.DelChild(c3))
 	assert.Equal(5, root.NoChildren())
 }
+
+func TestTreeFlatten(t *testing.T) {
+	assert := assert.New(t)
+	root := makeDeepTree("deep2")
+	flat := root.Flatten()
+	assert.Equal(9, len(flat))
+	assert.Equal("A", flat[0].Name())
+	assert.Equal("C33", flat[8].Name())
+}
