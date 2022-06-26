@@ -35,11 +35,11 @@ func TestTreeSimple(t *testing.T) {
 	assert := assert.New(t)
 
 	t0 := NewNode("t0", 0)
-	assert.Equal(0, t0.Size())
+	assert.Equal(0, t0.NoChildren())
 	assert.Equal("t0", t0.Name())
 
 	t1 := makeTree("t1")
-	assert.Equal(3, t1.Size())
+	assert.Equal(3, t1.NoChildren())
 	assert.Equal("t1", t1.Name())
 }
 
@@ -64,7 +64,7 @@ func TestTreeChildParent(t *testing.T) {
 	assert := assert.New(t)
 
 	root := makeDeepTree("t1")
-	assert.Equal(3, root.Size())
+	assert.Equal(3, root.NoChildren())
 
 	found := root.GetChild([]string{"xyz"})
 	assert.Equal("", found.name)
@@ -85,4 +85,32 @@ func TestTreeChildParent(t *testing.T) {
 	parent = found.Parent().Parent()
 	assert.Equal(root.name, parent.name)
 	assert.Equal(root.data, parent.data)
+}
+
+func TestTreeDelele(t *testing.T) {
+	assert := assert.New(t)
+	root := makeDeepTree("deep1")
+
+	assert.False(root.AddChild(root))
+	assert.False(root.AddChild(NewNode("A", 1)))
+	assert.False(root.AddChild(NewNode("B", 2)))
+
+	b := root.GetChild([]string{"B"})
+	assert.True(root.DelChild(b))
+	assert.Equal(2, root.NoChildren())
+
+	a := root.GetChild([]string{"A"})
+	assert.True(root.DelChild(a))
+	assert.Equal(1, root.NoChildren())
+
+	c := root.GetChild([]string{"C"})
+	assert.True(root.DelChild(c))
+	assert.Equal(3, root.NoChildren())
+
+	c3 := root.GetChild([]string{"C3"})
+	assert.Equal("C3", c3.name)
+	assert.Equal(33, c3.data)
+
+	assert.True(root.DelChild(c3))
+	assert.Equal(5, root.NoChildren())
 }

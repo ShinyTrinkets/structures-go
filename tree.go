@@ -19,7 +19,7 @@ func (n *Node) Name() string {
 	return n.name
 }
 
-func (n *Node) Size() int {
+func (n *Node) NoChildren() int {
 	return len(n.children)
 }
 
@@ -68,17 +68,32 @@ func (n *Node) SetData(data interface{}) {
 	n.data = data
 }
 
-func (n *Node) AddChild(c *Node) {
+func (n *Node) AddChild(c *Node) bool {
 	if reflect.DeepEqual(n, c) {
-		// cannot itself as child
-		return
+		// cannot add itself as child
+		return false
 	}
 	for _, child := range n.children {
 		if child.name == c.name {
 			// cannot have 2 children with the same name
-			return
+			return false
 		}
 	}
 	c.parent = n
 	n.children = append(n.children, c)
+	return true
+}
+
+func (n *Node) DelChild(c *Node) bool {
+	for i, child := range n.children {
+		if reflect.DeepEqual(child, c) {
+			n.children = append(n.children[:i], n.children[i+1:]...)
+			for _, orphan := range c.children {
+				orphan.parent = n
+				n.children = append(n.children, orphan)
+			}
+			return true
+		}
+	}
+	return false
 }
